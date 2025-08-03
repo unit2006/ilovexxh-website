@@ -16,6 +16,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordFeedback = document.getElementById('passwordFeedback');
     const confirmPasswordInput = document.getElementById('confirmPassword');
     const confirmPasswordFeedback = document.getElementById('confirmPasswordFeedback');
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const toggleConfirmPasswordBtn = document.getElementById('toggleConfirmPassword');
+    const passwordStrengthMeter = document.querySelector('.password-strength-meter');
+    const passwordStrengthText = document.querySelector('.password-strength-text');
     
     // 账号名验证
     if (accountNameInput) {
@@ -35,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (passwordInput) {
         passwordInput.addEventListener('input', function() {
             validatePassword(this.value);
+            updatePasswordStrength(this.value);
         });
     }
     
@@ -42,6 +47,20 @@ document.addEventListener('DOMContentLoaded', function() {
     if (confirmPasswordInput && passwordInput) {
         confirmPasswordInput.addEventListener('input', function() {
             validateConfirmPassword(this.value, passwordInput.value);
+        });
+    }
+    
+    // 密码可见性切换
+    if (togglePasswordBtn) {
+        togglePasswordBtn.addEventListener('click', function() {
+            togglePasswordVisibility(passwordInput, this);
+        });
+    }
+    
+    // 确认密码可见性切换
+    if (toggleConfirmPasswordBtn) {
+        toggleConfirmPasswordBtn.addEventListener('click', function() {
+            togglePasswordVisibility(confirmPasswordInput, this);
         });
     }
     
@@ -132,11 +151,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
         
-        // 验证通过
-        if (accountNameFeedback) {
-            accountNameFeedback.textContent = '账号名格式正确！您的访问地址将是：https://www.ilovexxh.com/' + accountName + '/文件名';
-            accountNameFeedback.className = 'valid-feedback';
-        }
+                // 验证通过
+                if (accountNameFeedback) {
+                    accountNameFeedback.textContent = '账号名格式正确！您的访问地址将是：https://deepseek.ilovexxh.com/' + accountName + '/文件名';
+                    accountNameFeedback.className = 'valid-feedback';
+                }
         if (accountNameInput) {
             accountNameInput.classList.add('is-valid');
         }
@@ -321,5 +340,96 @@ document.addEventListener('DOMContentLoaded', function() {
             // 滚动到顶部
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+    }
+    
+    /**
+     * 切换密码可见性
+     * @param {HTMLElement} inputElement - 密码输入框元素
+     * @param {HTMLElement} buttonElement - 切换按钮元素
+     */
+    function togglePasswordVisibility(inputElement, buttonElement) {
+        if (!inputElement || !buttonElement) return;
+        
+        const iconElement = buttonElement.querySelector('i');
+        
+        if (inputElement.type === 'password') {
+            inputElement.type = 'text';
+            if (iconElement) {
+                iconElement.classList.remove('bi-eye');
+                iconElement.classList.add('bi-eye-slash');
+            }
+        } else {
+            inputElement.type = 'password';
+            if (iconElement) {
+                iconElement.classList.remove('bi-eye-slash');
+                iconElement.classList.add('bi-eye');
+            }
+        }
+    }
+    
+    /**
+     * 更新密码强度指示器
+     * @param {string} password - 密码
+     */
+    function updatePasswordStrength(password) {
+        if (!passwordStrengthMeter || !passwordStrengthText) return;
+        
+        // 如果密码为空，重置强度指示器
+        if (!password) {
+            passwordStrengthMeter.style.width = '0';
+            passwordStrengthMeter.style.backgroundColor = '#e2e8f0';
+            passwordStrengthText.textContent = '';
+            return;
+        }
+        
+        // 计算密码强度
+        let strength = 0;
+        let feedback = '';
+        
+        // 长度检查
+        if (password.length >= 8) {
+            strength += 25;
+        } else if (password.length >= 6) {
+            strength += 10;
+        }
+        
+        // 包含小写字母
+        if (/[a-z]/.test(password)) {
+            strength += 15;
+        }
+        
+        // 包含大写字母
+        if (/[A-Z]/.test(password)) {
+            strength += 15;
+        }
+        
+        // 包含数字
+        if (/[0-9]/.test(password)) {
+            strength += 15;
+        }
+        
+        // 包含特殊字符
+        if (/[^A-Za-z0-9]/.test(password)) {
+            strength += 30;
+        }
+        
+        // 设置强度指示器样式和文本
+        passwordStrengthMeter.style.width = `${strength}%`;
+        
+        if (strength < 30) {
+            passwordStrengthMeter.style.backgroundColor = '#e74a3b'; // 危险红色
+            feedback = '密码强度：弱';
+        } else if (strength < 60) {
+            passwordStrengthMeter.style.backgroundColor = '#f6c23e'; // 警告黄色
+            feedback = '密码强度：中';
+        } else if (strength < 80) {
+            passwordStrengthMeter.style.backgroundColor = '#36b9ff'; // 信息蓝色
+            feedback = '密码强度：良好';
+        } else {
+            passwordStrengthMeter.style.backgroundColor = '#1cc88a'; // 成功绿色
+            feedback = '密码强度：强';
+        }
+        
+        passwordStrengthText.textContent = feedback;
     }
 });
