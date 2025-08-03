@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 验证通过
         if (accountNameFeedback) {
-            accountNameFeedback.textContent = '账号名格式正确！您的访问地址将是：https://www.ilovexxh.com/Bigtalk/文件名';
+            accountNameFeedback.textContent = '账号名格式正确！您的访问地址将是：https://deepseek.ilovexxh.com/Bigtalk/文件名，比如：用户上传a.html，那么访问地址将是: https://deepseek.ilovexxh.com/Bigtalk/a.html';
             accountNameFeedback.className = 'valid-feedback';
         }
         if (accountNameInput) {
